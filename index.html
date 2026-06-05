@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KSB RESTAURANT</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="header-inner">
+        <h1 class="logo">KSB RESTAURANT</h1>
+        <nav class="nav-tabs">
+          <button class="nav-btn active" data-tab="menu">Menu</button>
+          <button class="nav-btn" data-tab="cart">Cart <span class="cart-badge" id="cartBadge">0</span></button>
+          <button class="nav-btn" data-tab="manage">Manage</button>
+          <button class="nav-btn" data-tab="reports">Reports</button>
+        </nav>
+        <button class="mobile-menu-btn" id="mobileMenuBtn">&#9776;</button>
+      </div>
+      <nav class="mobile-nav" id="mobileNav">
+        <button class="nav-btn active" data-tab="menu">Menu</button>
+        <button class="nav-btn" data-tab="cart">Cart <span class="cart-badge" id="cartBadgeMobile">0</span></button>
+        <button class="nav-btn" data-tab="manage">Manage Menu</button>
+        <button class="nav-btn" data-tab="reports">Reports</button>
+      </nav>
+    </header>
+
+    <main class="main">
+      <!-- Menu Tab -->
+      <section class="tab-content active" id="tab-menu">
+        <div class="section-header">
+          <h2>Our Menu</h2>
+          <input type="text" id="menuSearch" class="search-input" placeholder="Search menu...">
+        </div>
+        <div class="menu-grid" id="menuGrid"></div>
+      </section>
+
+      <!-- Cart Tab -->
+      <section class="tab-content" id="tab-cart">
+        <div class="section-header">
+          <h2>Your Order</h2>
+          <button class="btn btn-danger btn-sm" id="clearCartBtn">Clear Cart</button>
+        </div>
+        <div class="cart-layout">
+          <div class="cart-items" id="cartItems">
+            <p class="empty-msg" id="emptyCartMsg">Your cart is empty. Click items on the menu to add them.</p>
+          </div>
+          <div class="bill-section" id="billSection">
+            <h3>Bill Summary</h3>
+            <div class="bill-lines" id="billLines"></div>
+            <div class="bill-total" id="billTotal">
+              <span>Total</span>
+              <span id="totalAmount">0.00</span>
+            </div>
+            <div class="bill-actions">
+              <button class="btn btn-primary" id="payNowBtn">Pay Now</button>
+              <button class="btn btn-outline" id="printBillBtn">Print Bill</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Manage Menu Tab -->
+      <section class="tab-content" id="tab-manage">
+        <div class="section-header">
+          <h2>Manage Menu</h2>
+          <button class="btn btn-primary" id="addItemBtn">+ Add Item</button>
+        </div>
+        <div class="manage-list" id="manageList"></div>
+      </section>
+
+      <!-- Reports Tab -->
+      <section class="tab-content" id="tab-reports">
+        <div class="section-header">
+          <h2>Monthly Sales Report</h2>
+          <input type="month" id="reportMonth" class="search-input">
+          <button class="btn btn-outline btn-sm" id="exportReportBtn">Export</button>
+        </div>
+        <div class="report-summary" id="reportSummary"></div>
+        <div class="report-table-wrap">
+          <table class="report-table" id="reportTable">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Orders</th>
+                <th>Items Sold</th>
+                <th>Revenue</th>
+              </tr>
+            </thead>
+            <tbody id="reportBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <!-- Add/Edit Item Modal -->
+    <div class="modal-overlay" id="itemModal">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 id="modalTitle">Add Menu Item</h3>
+          <button class="modal-close" id="modalClose">&times;</button>
+        </div>
+        <form id="itemForm" class="modal-body">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="itemName" required>
+          </div>
+          <div class="form-group">
+            <label>Price ($)</label>
+            <input type="number" id="itemPrice" step="0.01" min="0" required>
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <select id="itemCategory">
+          <option value="Breakfast">Breakfast</option>
+          <option value="Dosa Varieties">Dosa Varieties</option>
+          <option value="Meals & Rice">Meals & Rice</option>
+          <option value="Snacks">Snacks</option>
+          <option value="Beverages">Beverages</option>
+          <option value="Cool Drinks">Cool Drinks</option>
+         <option value="Desserts">Desserts</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Image URL</label>
+            <input type="url" id="itemImage" placeholder="https://...">
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-outline" id="modalCancel">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Pay Now Modal (QR Code) -->
+    <div class="modal-overlay" id="payModal">
+      <div class="modal modal-sm">
+        <div class="modal-header">
+          <h3>Pay Now</h3>
+          <button class="modal-close" id="payModalClose">&times;</button>
+        </div>
+        <div class="modal-body pay-body">
+          <p class="pay-amount">Total: $<span id="payAmount">0.00</span></p>
+          <div class="qr-container" id="qrContainer"></div>
+          <p class="pay-instruction">Scan the QR code to pay</p>
+          <button class="btn btn-primary btn-block" id="confirmPaymentBtn">Confirm Payment</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Print Bill (hidden) -->
+    <div class="print-bill" id="printBill">
+      <div class="print-header">
+        <h2>KSB RESTAURANT</h2>
+        <p>Date: <span id="printDate"></span></p>
+      </div>
+      <div class="print-items" id="printItems"></div>
+      <div class="print-total">
+        <strong>Total: $<span id="printTotal">0.00</span></strong>
+      </div>
+      <div class="print-footer">
+        <p><span id="printDate"></span></p>
+        <p>Thank you for dining with us!</p>
+        <p>Visit Again!</p>
+      </div>
+    </div>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
